@@ -2,12 +2,12 @@
 
 ### 使用composer进行安装
 ~~~
-composer require hulang/file
+composer require hulang/php-file
 ~~~
 
 ### 使用composer进行更新
 ~~~
-composer update hulang/file
+composer update hulang/php-file
 ~~~
 
 ### 引入类文件
