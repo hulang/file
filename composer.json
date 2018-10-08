@@ -1,7 +1,7 @@
 {
     "name": "hulang/php-file",
     "description": "PHP File、folder operation",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "authors": [{
         "name": "hulang",
         "email": "hulangfy@163.com"
