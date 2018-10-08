@@ -144,7 +144,7 @@ class File
         $list = array();
         foreach ($glob as $name => $file) {
             $dir_arr = [];
-            $dir_arr['name'] = $file->getFilename();
+            $dir_arr['name'] = self::convertEncoding($file->getFilename());
             if ($file->isDir()) {
                 $dir_arr['type'] = 'dir';
                 $dir_arr['size'] = self::get_size($file->getPathname());
@@ -245,5 +245,17 @@ class File
     public static function getFileExt($fileName)
     {
         return strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+    }
+    /**
+     * 转换字符编码
+     * @param $string
+     * @return string
+     */
+    public static function convertEncoding($string)
+    {
+        //根据系统进行配置
+        $encode = stristr(PHP_OS, 'WIN') ? 'GBK' : 'UTF-8';
+        $string = iconv('UTF-8', $encode, $string);
+        return $string;
     }
 }
