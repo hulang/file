@@ -255,7 +255,7 @@ class File
     {
         //根据系统进行配置
         $encode = stristr(PHP_OS, 'WIN') ? 'GBK' : 'UTF-8';
-        $string = iconv('UTF-8', $encode, $string);
+        $string = iconv($encode, 'UTF-8', $string);
         return $string;
     }
 }
