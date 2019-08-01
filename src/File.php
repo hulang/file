@@ -148,12 +148,11 @@ class File
             $dir_arr['name'] = self::convertEncoding($file->getFilename());
             if ($file->isDir()) {
                 $dir_arr['type'] = 'dir';
-                $dir_arr['size'] = self::get_size($file->getPathname());
-                $dir_arr['size_dir'] = self::dirSize($file->getPathname());
+                $dir_arr['size'] = self::fileSizeFormat(self::getDirSize($file->getPathname()));
                 $dir_arr['ext'] = '';
             } else {
                 $dir_arr['type'] = 'file';
-                $dir_arr['size'] = self::setSizeFormat($file->getSize());
+                $dir_arr['size'] = $file->getSize();
                 $dir_arr['ext'] = $file->getExtension();
             }
             $dir_arr['path'] = $file->getPathname();
@@ -172,7 +171,7 @@ class File
      * @param $dir  目录名
      * @return number 文件夹大小(单位 B)
      */
-    public static function get_size($dir)
+    public static function getDirSize($dir)
     {
         $dirlist = opendir($dir);
         $dirsize = 0;
@@ -188,36 +187,6 @@ class File
         closedir($dirlist);
         return $dirsize;
     }
-    public static function dirSize($directory)
-    {
-        $dir_size = 0;
-        //用来累加各个文件大小
-        if ($dir_handle = @opendir($directory)) {
-            //打开目录，并判断是否能成功打开
-            while ($filename = readdir($dir_handle)) {
-                //循环遍历目录下的所有文件
-                if ($filename != '.' && $filename != '..') {
-                    //一定要排除两个特殊的目录
-                    $subFile = $directory . '/' . $filename;
-                    //将目录下的子文件和当前目录相连
-                    if (is_dir($subFile)) {
-                        //如果为目录
-                        $dir_size += self::dirSize($subFile);
-                    }
-                    //递归地调用自身函数，求子目录的大小
-                    if (is_file($subFile)) {
-                        //如果是文件
-                        $dir_size += filesize($subFile);
-                    }
-                    //求出文件的大小并累加
-                }
-            }
-            closedir($dir_handle);
-            //关闭文件资源
-            return self::setSizeFormat($dir_size);
-            //返回计算后的目录大小
-        }
-    }
     /**
      * 检测是否为空文件夹
      * @param $dir  目录名
@@ -227,22 +196,42 @@ class File
     {
         return ($files = @scandir($dir)) && count($files) <= 2;
     }
-    /**
-     * 文件大小格式化
-     * @param integer $size 初始文件大小，单位为byte
-     * @return array 格式化后的文件大小和单位数组，单位为byte、KB、MB、GB、TB
-     */
-    public static function setSizeFormat($size = 0, $dec = 2)
+    public static function fileSizeFormat($byte)
     {
-        $unit = array('B', 'KB', 'MB', 'GB', 'TB', 'PB');
-        $pos = 0;
-        while ($size >= 1024) {
-            $size /= 1024;
-            $pos++;
+        if ($byte < 1024) {
+            $unit = 'B';
+        } else if ($byte < 10240) {
+            $byte = self::round_dp($byte / 1024, 2);
+            $unit = 'KB';
+        } else if ($byte < 102400) {
+            $byte = self::round_dp($byte / 1024, 2);
+            $unit = 'KB';
+        } else if ($byte < 1048576) {
+            $byte = self::round_dp($byte / 1024, 2);
+            $unit = 'KB';
+        } else if ($byte < 10485760) {
+            $byte = self::round_dp($byte / 1048576, 2);
+            $unit = 'MB';
+        } else if ($byte < 104857600) {
+            $byte = self::round_dp($byte / 1048576, 2);
+            $unit = 'MB';
+        } else if ($byte < 1073741824) {
+            $byte = self::round_dp($byte / 1048576, 2);
+            $unit = 'MB';
+        } else {
+            $byte = self::round_dp($byte / 1073741824, 2);
+            $unit = 'GB';
         }
-        $result['size'] = round($size, $dec);
-        $result['unit'] = $unit[$pos];
-        return $result['size'] . $result['unit'];
+        $byte .= $unit;
+        return $byte;
+    }
+    /**
+     * 辅助函数 round_up()，该函数用来取舍小数点位数的，四舍五入
+     */
+    public static function round_dp($num, $dp)
+    {
+        $sh = pow(10, $dp);
+        return (round($num * $sh) / $sh);
     }
     /**
      * 获取文件扩展名
