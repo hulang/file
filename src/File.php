@@ -2,6 +2,7 @@
 /*
 ** 文件及文件夹处理类
 */
+
 namespace hulang;
 
 class File
@@ -148,10 +149,11 @@ class File
             if ($file->isDir()) {
                 $dir_arr['type'] = 'dir';
                 $dir_arr['size'] = self::get_size($file->getPathname());
+                $dir_arr['size_dir'] = self::dirSize($file->getPathname());
                 $dir_arr['ext'] = '';
             } else {
                 $dir_arr['type'] = 'file';
-                $dir_arr['size'] = $file->getSize();
+                $dir_arr['size'] = self::setSizeFormat($file->getSize());
                 $dir_arr['ext'] = $file->getExtension();
             }
             $dir_arr['path'] = $file->getPathname();
@@ -212,7 +214,7 @@ class File
             }
             closedir($dir_handle);
             //关闭文件资源
-            return self::fileSizeFormat($dir_size);
+            return self::setSizeFormat($dir_size);
             //返回计算后的目录大小
         }
     }
@@ -225,7 +227,12 @@ class File
     {
         return ($files = @scandir($dir)) && count($files) <= 2;
     }
-    public static function fileSizeFormat($size = 0, $dec = 2)
+    /**
+     * 文件大小格式化
+     * @param integer $size 初始文件大小，单位为byte
+     * @return array 格式化后的文件大小和单位数组，单位为byte、KB、MB、GB、TB
+     */
+    public static function setSizeFormat($size = 0, $dec = 2)
     {
         $unit = array('B', 'KB', 'MB', 'GB', 'TB', 'PB');
         $pos = 0;
