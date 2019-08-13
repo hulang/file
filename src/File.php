@@ -178,7 +178,7 @@ class File
         while (false !== ($folderorfile = readdir($dirlist))) {
             if ($folderorfile != '.' && $folderorfile != '..') {
                 if (is_dir("{$dir}/{$folderorfile}")) {
-                    $dirsize += self::get_size("{$dir}/{$folderorfile}");
+                    $dirsize += self::getDirSize("{$dir}/{$folderorfile}");
                 } else {
                     $dirsize += filesize("{$dir}/{$folderorfile}");
                 }
