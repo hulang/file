@@ -152,7 +152,7 @@ class File
                 $dir_arr['ext'] = '';
             } else {
                 $dir_arr['type'] = 'file';
-                $dir_arr['size'] = $file->getSize();
+                $dir_arr['size'] = self::fileSizeFormat($file->getSize());
                 $dir_arr['ext'] = $file->getExtension();
             }
             $dir_arr['path'] = $file->getPathname();
